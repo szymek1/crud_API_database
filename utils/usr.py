@@ -2,9 +2,9 @@ import json
 from datetime import datetime
 from collections import defaultdict
 
-from client import Client
-from utilities import Utilities
-from data_utils import Items
+from .client import Client
+from .utilities import Utilities
+from .data_utils import Items
 
 
 class User(Client):
@@ -14,7 +14,7 @@ class User(Client):
 
     def add_contact(self, id_contact: str, phone_numb: str, name: str, surname: str) -> None:
         """Add contact to the contact list of a user"""
-        current_date = datetime.now()
+        current_date = str(datetime.now())
 
         if not Utilities.is_usr_directory(self.id):
             Utilities.make_usr_dir(self.id)
@@ -50,6 +50,7 @@ class User(Client):
         """Remove contact from user list"""
         if Utilities.is_contact_file(self.id, id_contact):
             Utilities.rmv_contact(self.id, id_contact)
+            Utilities.rmv_contact_from_contact_list(self.id, id_contact)
             print(f'Contact: {id_contact} was successfully removed')
         else:
             print('No such contact')
@@ -58,31 +59,40 @@ class User(Client):
         """Update contact from contact list; Only possible to update 1 or more fields"""
         def get_choice(number: int) -> str:
             switcher = {
-                0: 'id_contact',
                 1: 'phone_numb',
                 2: 'name',
-                3: 'surname'
+                3: 'surname',
+                4: 'close edition'
             }
             return switcher.get(number, 'nothing')
 
+        edition_on = True
+
         if Utilities.is_contact_file(self.id, id_contact):
-            print('Select number related to contact data you would like to change:'
-                  '\n0. id_contact'
-                  '\n1. phone_numb'
-                  '\n2. name'
-                  '\n3. surname')
+            while edition_on:
+                print('Select number related to contact data you would like to change:'
+                      '\n1. phone_numb'
+                      '\n2. name'
+                      '\n3. surname'
+                      '\n4. close edition')
 
-            choice = input('Type here: ')
-            choice = get_choice(number=int(choice))
+                choice = input('Type here: ')
+                choice = get_choice(number=int(choice))
 
-            if choice != 'nothing':
-                with open(Items.users_rootdir + self.id + f'/{id_contact}.json', 'r+') as contact:
-                    contact_updated = json.load(contact)
-                    new_content = input(f'Type here new value for {choice}: ')
-                    contact_updated[choice] = new_content  # if content is id_contact filename should be changed
-                    json.dump(contact_updated, contact)
-            else:
-                print('No such position to edit')
+                if choice != 'nothing':
+                    if choice != 'close edition':
+                        with open(Items.users_rootdir + self.id + f'/{id_contact}.json', 'r+') as contact:
+                            contact_updated = json.load(contact)
+                            new_content = input(f'Type here new value for {choice}: ')
+                            contact_updated[choice] = new_content
+                            contact.seek(0)
+                            json.dump(contact_updated, contact, indent=4)
+                            contact.truncate()
+                    else:
+                        edition_on = False
+                        print('Edition closed')
+                else:
+                    print('No such position to edit')
         else:
             print('No such contact')
 

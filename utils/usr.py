@@ -27,7 +27,7 @@ class User(Client):
             'created at': current_date
         }
         with open(Items.users_rootdir + self.id + f'/{id_contact}.json', 'w') as contact:
-            json.dump(new_contact, contact)
+            json.dump(new_contact, contact, indent=4)
             self.add_new_contact_to_list(id_contact)
 
     def add_new_contact_to_list(self, id_contact: str) -> None:
@@ -39,12 +39,14 @@ class User(Client):
             with open(Items.users_rootdir + self.id + f'/{self.id}_contact_list.json', 'r+') as c_list:
                 contact_list = json.load(c_list)
                 contact_list['current contacts'].append(id_contact)
-                json.dump(contact_list, c_list)
+                c_list.seek(0)
+                json.dump(contact_list, c_list, indent=4)
+                c_list.truncate()
         else:
             with open(Items.users_rootdir + self.id + f'/{self.id}_contact_list.json', 'w') as c_list:
                 contact_list = defaultdict(list)
                 contact_list['current contacts'].append(id_contact)
-                json.dump(contact_list, c_list)
+                json.dump(contact_list, c_list, indent=4)
 
     def remove_contact(self, id_contact: str) -> None:
         """Remove contact from user list"""
@@ -107,6 +109,7 @@ class User(Client):
                 for contact in all_contacts:
                     print(contact)
 
-    def disconnect_user(self) -> None:
+    def disconnect_user(self) -> bool:
         """End user's session"""
         print('Ending session')
+        return False

@@ -25,6 +25,6 @@ class Client(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def disconnect_user(self) -> None:
+    def disconnect_user(self) -> bool:
         """End user's session"""
         raise NotImplementedError

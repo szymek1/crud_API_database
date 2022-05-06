@@ -6,3 +6,4 @@ class Items:
     """Class which stores importnt variables, paths etc.."""
 
     users_rootdir: str = '/home/szymon_kubuntu/Documents/myProjects/Be_crudAPI-copy/users/'
+    users_configs: str = '/home/szymon_kubuntu/Documents/myProjects/Be_crudAPI-copy/configs/'

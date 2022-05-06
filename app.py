@@ -4,34 +4,6 @@ import argparse
 from utils.usr import User
 from utils.validator import Validator
 
-"""
-new_usr_data = {
-    'id_contact': '123',
-    'phone_numb': '600462504',
-    'name': 'Szymon',
-    'surname': 'Bogus'
-}
-
-user.add_contact(id_contact=new_usr_data['id_contact'], phone_numb=new_usr_data['phone_numb'],
-                 name=new_usr_data['name'], surname=new_usr_data['surname'])
-
-user.show_all_contacts()
-
-user.update_contact(id_contact=new_usr_data['id_contact'])
-
-user.remove_contact(id_contact=new_usr_data['id_contact'])
-"""
-
-
-def get_choice(number: int) -> str:
-    switcher = {
-        1: '',
-        2: 'name',
-        3: 'surname',
-        4: 'close edition'
-    }
-    return switcher.get(number, 'nothing')
-
 
 def main(arguments):
 
@@ -47,7 +19,41 @@ def main(arguments):
         true_key = usr_data['api_key']
         if Validator.validate_api_key(true_api_key=true_key, given_api_key=given_key):
             user = User(user_id=user_id)
-            # add function(decorator would be cool) for deciding which class method to use
+
+            usr_session = True
+            operations_list = [1, 2, 3, 4, 5]
+            while usr_session:
+                print('Select number regarding operation you would like to perform:'
+                      '\n1. add new contact'
+                      '\n2. update contact'
+                      '\n3. show contact list'
+                      '\n4. remove contact'
+                      '\n5. close session')
+
+                operation = int(input('Chose operation: '))
+
+                if operation in operations_list:
+                    if operation == 1:
+                        id_contact, phone_numb, name, surname = input('Type: id_contact, phone number, name, surname: ').split(', ', 4)
+                        user.add_contact(
+                            id_contact=id_contact,
+                            phone_numb=phone_numb,
+                            name=name,
+                            surname=surname
+                        )
+                    if operation == 2:
+                        contact_to_update = input('Type contact_id of contact to update: ')
+                        user.update_contact(id_contact=contact_to_update)
+                    if operation == 3:
+                        user.show_all_contacts()
+                    if operation == 4:
+                        contact_to_remove = input('Type contact_id of contact to remove: ')
+                        user.remove_contact(id_contact=contact_to_remove)
+                    if operation == 5:
+                        usr_session = user.disconnect_user()
+                else:
+                    print('Operation not found')
+
         else:
             print('Incorrect api_key')
             exit()
@@ -64,3 +70,4 @@ if __name__ == "__main__":
     parser.add_argument("-h", "--help", action="help", help="Display this message.\nAlways check user_id and api_key.")
 
     args = parser.parse_args()
+    main(args)
